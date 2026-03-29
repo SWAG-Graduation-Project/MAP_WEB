@@ -20,57 +20,53 @@ function App() {
 
       const map = new kakao.maps.Map(mapRef.current, options);
 
-      // 🔥 함수 먼저 선언하는 게 안전
       const handleMarkerClick = (buildingName) => {
         console.log("클릭된 건물:", buildingName);
 
-        const message = {
-          type: "BUILDING_SELECTED",
-          buildingName,
-        };
-
-        console.log("안드로이드로 보낼 데이터:", message);
-
-        window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+        // 안드로이드 WebView 브릿지 호출
+        if (window.AndroidBridge && window.AndroidBridge.onBuildingSelected) {
+          window.AndroidBridge.onBuildingSelected(buildingName);
+        }
       };
 
-      // ✅ 차관
       const marker1 = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(37.653015, 127.0163289),
         image: markerImage,
       });
 
-      // ✅ 인문대
       const marker2 = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(37.6530911, 127.0151462),
         image: markerImage,
       });
-      // ✅ 자연대
+
       const marker3 = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(37.651069, 127.016827),
         image: markerImage,
       });
-      // ✅ 예술대학
+
       const marker4 = new kakao.maps.Marker({
         map: map,
         position: new kakao.maps.LatLng(37.651459, 127.017262),
         image: markerImage,
       });
 
-      marker1.setMap(map);
-      marker2.setMap(map);
-      marker3.setMap(map);
-      marker4.setMap(map);
-      // 🔥 클릭 이벤트 연결
       window.kakao.maps.event.addListener(marker1, "click", () => {
         handleMarkerClick("차관");
       });
 
       window.kakao.maps.event.addListener(marker2, "click", () => {
         handleMarkerClick("인문대");
+      });
+
+      window.kakao.maps.event.addListener(marker3, "click", () => {
+        handleMarkerClick("자연대");
+      });
+
+      window.kakao.maps.event.addListener(marker4, "click", () => {
+        handleMarkerClick("예술대학");
       });
     });
   }, []);
